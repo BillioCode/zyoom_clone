@@ -201,7 +201,7 @@ const MeetingTypeList = () => {
           router.push(linkToPush);
         }}
       >
-               {" "}
+         {" "}
         <Input
           placeholder="Meeting link"
           onChange={(e) => setValues({ ...values, link: e.target.value })}
