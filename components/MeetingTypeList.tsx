@@ -12,13 +12,11 @@ import ReactDatePicker from "react-datepicker";
 import { Input } from "@/components/ui/input";
 
 const MeetingTypeList = () => {
-  const router = useRouter();
-  // state to store the meeting type
+  const router = useRouter(); // state to store the meeting type
   const [meetingState, setMeetingState] = useState<
     "isScheduleMeeting" | "isJoiningMeeting" | "isInstantMeeting" | undefined
-  >();
+  >(); // state to store the meeting details
 
-  // state to store the meeting details
   const [values, setValues] = useState({
     dateTime: new Date(),
     description: "",
@@ -28,9 +26,8 @@ const MeetingTypeList = () => {
   const [callDetails, setCallDetails] = useState<Call>();
 
   const { user } = useUser(); // get the current user
-  const client = useStreamVideoClient(); // get the client instance
+  const client = useStreamVideoClient(); // get the client instance // create a meeting and join it
 
-  // create a meeting and join it
   const createMeeting = async () => {
     if (!user || !client) return;
     try {
@@ -42,7 +39,7 @@ const MeetingTypeList = () => {
       const id = crypto.randomUUID(); // random id
       const call = client.call("default", id); // create a call with the random id
 
-      if (!call) throw new Error("Failed to create  call.");
+      if (!call) throw new Error("Failed to create  call.");
       const startsAt =
         values.dateTime.toISOString() || new Date(Date.now()).toISOString();
 
@@ -74,6 +71,7 @@ const MeetingTypeList = () => {
   const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetails?.id}`;
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+           {" "}
       <HomeCard
         bgColor="bg-[#FF742E]"
         title="New Meeting"
@@ -82,6 +80,7 @@ const MeetingTypeList = () => {
         alt="meeting"
         handleClick={() => setMeetingState("isInstantMeeting")}
       />
+           {" "}
       <HomeCard
         bgColor="bg-[#0E78F9]"
         title="Schedule Meeting"
@@ -90,6 +89,7 @@ const MeetingTypeList = () => {
         alt="schedule"
         handleClick={() => setMeetingState("isScheduleMeeting")}
       />
+           {" "}
       <HomeCard
         bgColor="bg-[#830EF9]"
         title="View Recordings"
@@ -98,6 +98,7 @@ const MeetingTypeList = () => {
         alt="recordings"
         handleClick={() => router.push("/recordings")}
       />
+           {" "}
       <HomeCard
         bgColor="bg-[#F9A90E]"
         title="Join Meeting"
@@ -106,7 +107,7 @@ const MeetingTypeList = () => {
         alt="join"
         handleClick={() => setMeetingState("isJoiningMeeting")}
       />
-
+           {" "}
       {!callDetails ? (
         <MeetingModal
           isOpen={meetingState === "isScheduleMeeting"}
@@ -114,27 +115,34 @@ const MeetingTypeList = () => {
           title="Create Meeting"
           handleClick={createMeeting}
         >
+                   {" "}
           <div className="flex flex-col gap-2.5">
+                       {" "}
             <label
               htmlFor="description"
               className="text-base text-normal leading-[22px] text-[var(--sky-2)] "
             >
-              Add a description
+                            Add a description            {" "}
             </label>
+                       {" "}
             <Textarea
               className="border-none focus-visible:ring-0 focus-visible-ring-offset-0 text-white"
               onChange={(e) => {
                 setValues({ ...values, description: e.target.value });
               }}
             />
+                     {" "}
           </div>
+                   {" "}
           <div className="w-full flex flec-col gap-2.5">
+                       {" "}
             <label
               htmlFor="description"
               className="text-base text-normal leading-[22px] text-[var(--sky-2)]"
             >
-              Select date and time
+                            Select date and time            {" "}
             </label>
+                       {" "}
             <ReactDatePicker
               selected={values.dateTime}
               onChange={(date) => setValues({ ...values, dateTime: date! })}
@@ -145,7 +153,9 @@ const MeetingTypeList = () => {
               dateFormat={"MMMM d, yyyy h:mm aa"}
               className="w-full rounded p-2 focus:outline-none bg-[#252A41] text-white"
             />
+                     {" "}
           </div>
+                 {" "}
         </MeetingModal>
       ) : (
         <MeetingModal
@@ -162,7 +172,7 @@ const MeetingTypeList = () => {
           buttonIcon="/icons/copy.svg"
         />
       )}
-
+           {" "}
       <MeetingModal
         isOpen={meetingState === "isInstantMeeting"}
         onClose={() => setMeetingState(undefined)}
@@ -171,21 +181,35 @@ const MeetingTypeList = () => {
         buttonText="Start Meeting"
         handleClick={createMeeting}
       />
-
+           {" "}
       <MeetingModal
         isOpen={meetingState === "isJoiningMeeting"}
         onClose={() => setMeetingState(undefined)}
         title="Type the link here"
         className="text-center"
         buttonText="Join Meeting"
-        handleClick={() => router.push(values.link)}
+        handleClick={() => {
+          let linkToPush = values.link.trim();
+
+          if (
+            !linkToPush.startsWith("http://") &&
+            !linkToPush.startsWith("https://")
+          ) {
+            linkToPush = `https://${linkToPush}`;
+          }
+
+          router.push(linkToPush);
+        }}
       >
+               {" "}
         <Input
-          placeholder="Meeting Link"
-          className="border-none bg-[var(--dark-3)] focus-visible:ring-0 focus-visible-ring-offset-0 text-white"
+          placeholder="Meeting link"
           onChange={(e) => setValues({ ...values, link: e.target.value })}
+          className="border-none bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0"
         />
+             {" "}
       </MeetingModal>
+         {" "}
     </section>
   );
 };
